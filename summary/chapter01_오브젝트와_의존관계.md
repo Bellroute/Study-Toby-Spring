@@ -736,3 +736,191 @@ UserDao는 DB 연결 방법이라는 기능을 확장하는 데는 열려 있는
 
 *스프링이란 바로 지금까지 설명한 객체지향적 설계 원칙과 디자인 패턴에 나타난 장점을 자연스럽게 개발자들이 활용할 수 있게 해주는 프레임워크다.*
 
+</br>
+
+## 1.4 제어의 역전(IoC)
+
+IoC라는 약자로 많이 사용되는 제어의 역전(Inversion of Control)이 무엇인지 살펴보기 위해 UserDao 코드를 좀 더 개선해보자.
+
+### 1.4.1 오브젝트 팩토리
+
+UserDaoTest는 기존에 UserDao가 직접 담당하던 기능(어떤 ConnectionMaker 구현 클래스를 사용할지를 결정하는 기능)을 떠맡음. UserDao가 ConnectionMaker 인터페이스를 구현한 특정 클래스로부터 독립할 수 있게 되었지만, 사실 UserDaoTest의 역할은 UserDao의 기능이 잘 동작하는지 테스트하는 것임. 이 역시 분리가 필요해 보임.
+
+-> 분리될 기능
+
+- UserDao와 ConnectionMaker 구현 클래스의 오브젝트를 만드는 것
+- 그렇게 만들어진 두 개의 오브젝트가 연결돼서 사용될 수 있도록 관계를 맺어 주는 것.
+
+</br>
+
+#### 팩토리
+
+> 객체의 생성 방법을 결정하고 그렇게 만들어진 오브젝트를 돌려주는 역할을 하는 오브젝트를 흔히 팩토리(Factory)라고 부른다.
+
+- 디자인 패턴에서 말하는 추상 팩토리 패턴, 팩토리 메소드 패턴과는 다른 개념
+- 단지 오브젝트를 생성하는 쪽과 생성된 오브젝트를 사용하는 쪽의 역할과 책임을 깔끔하게 분리하려는 목적으로 사용
+
+팩토리 역할을 맡을 클래스를 DaoFactory라고 하자. 그리고 UserDaoTest에 담겨 있던 UserDao, ConnectionMaker 관련 생성 작업을 DaoFactory로 옮기고, UserDaoTest에서는 DaoFactory에 요청해서 미리 만들어진 UserDao 오브젝트를 가져와 사용하게 만든다.
+
+**[DaoFactory.java]**
+
+```java
+package springbook.user.dao;
+
+public class DaoFactory {
+
+    public UserDao userDao() {
+        // 팩토리의 메소드는 UserDao 타입의 오브젝트를 어떻게 만들고, 어떻게 준비시킬지를 결정
+        ConnectionMaker connectionMaker = new DConnectionMaker();
+        UserDao userDao = new UserDao(connectionMaker);
+
+        return userDao;
+    }
+}
+```
+
+DaoFactory의 userDao 메소드를 호출하면 DConnectionMaker를 사용해 DB 커넥션을 가져오도록 이미 설정된 UserDao 오브젝트를 되돌려줌.
+
+**[UserDaoTest.java]**
+
+```java
+package springbook.user;
+
+import springbook.user.dao.DaoFactory;
+import springbook.user.dao.UserDao;
+import springbook.user.domain.User;
+
+import java.sql.SQLException;
+
+public class UserDaoTest {
+
+    public static void main(String[] args) throws SQLException, ClassNotFoundException {
+        UserDao dao = new DaoFactory().userDao();
+      	...
+    }
+}
+
+```
+
+UserDaoTest는 이제 UserDao가 어떻게 만들어지는지 신경 쓰지 않고 팩토리로부터 UserDao 오브젝트를 받아다가, 자신의 관심사인 테스트를 위해 활용하기만 하면 그만. ~~(리팩토링 뒤엔 잊지 말고 테스트)~~
+
+</br>
+
+#### 설계도로서의 팩토리
+
+분리됨 오브젝트들의 역할과 관계를 분석해보자.
+
+- UserDao, ConnectionMaker - 애플리케이션의 핵심적인 데이터 로직과 기술 로직을 담당
+- DaoFactory - 애플리케이션의 오브젝트들을 구성하고 그 관계를 정의하는 책임
+
+전자가 실질적인 로직을 담당하는 **컴포넌트** 라면, 
+후자는 애플리케이션을 구성하는 컴포넌트의 구조와 관계를 정의한 **설계도** 같은 역할을 수행
+
+설계도는 <u>간단히 어떤 오브젝트가 어떤 오브젝트를 사용하는지를 정의해놓은 코드.</u> 이런 작업이 애플리케이션 전체에 걸쳐 일어난다면 컴포넌트의 의존관계에 대한 설계도와 같은 역할을 하게 될 것.
+
+이제 새로운 ConnectionMaker 구현 클래스로 변경이 필요하면 DaoFactory를 수정해서 변경된 클래스를 생성해 설정해주도록 코드를 수정해주면 된다. 여전히 우리의 핵심 기술이 담긴 UserDao는 변경이 필요 없어 안전하게 소스코드를 보존할 수 있음. 동시에 DB 연결 방식은 자유로운 확장이 가능
+
+DaoFactory를 분리 함으로써, **애플리케이션의 컴포넌트 역할을 하는 오브젝트와 애플리케이션의 구조를 결정하는 오브젝트를 분리했다** 는 데 가장 큰 의미가 있다.
+
+</br>
+
+### 1.4.2 오브젝트 팩토리의 활용
+
+DaoFactory에 UserDao가 아닌 다른 DAO의 생성 기능을 넣으면 어떻게 될까? AccountDao, MessageDao 등을 만들었다고 해보자.
+
+userDao() 메소드를 복사해서 accountDao(), messageDao()를 만든다면?
+
+-> ConnectionMaker 구현 클래스의 오브젝트를 생성하는 코드가 메소드마다 반복됨. 기능이 중복돼서 나타남.
+
+**[DaoFactory.java]**
+
+```java
+package springbook.user.dao;
+
+public class DaoFactory {
+
+    public UserDao userDao() {
+        // 팩토리의 메소드는 UserDao 타입의 오브젝트를 어떻게 만들고, 어떻게 준비시킬지를 결정
+        return new UserDao(new DConnectionMaker());
+    }
+
+    public AccountDao accountDao() {
+        return new AccountDao(new DConnectionMaker());
+    }
+
+    public MessageDao messageDao() {
+        return new MessageDao(new DConnectionMaker());
+    }
+}
+```
+
+새 개의 DAO를 만드는 팩토리 메소드 안에 모두 new DConnectionMaker() 라는 인스턴스를 만드는 부분이 반복돼서 나타남. DAO가 더 많아지면 ConnectionMaker의 구현 클래스를 바꿀 때마다 일일이 수정해야함.
+
+**[DaoFactory.java]**
+
+```java
+package springbook.user.dao;
+
+public class DaoFactory {
+
+    public UserDao userDao() {
+        // 팩토리의 메소드는 UserDao 타입의 오브젝트를 어떻게 만들고, 어떻게 준비시킬지를 결정
+        return new UserDao(connectionMaker());
+    }
+
+    public AccountDao accountDao() {
+        return new AccountDao(connectionMaker());
+    }
+
+    public MessageDao messageDao() {
+        return new MessageDao(connectionMaker());
+    }
+    
+    public ConnectionMaker connectionMaker() {
+        return new DConnectionMaker(); // 분리해서 중복을 제거한 ConnectionMaker 타입 오브젝트 생성 코드
+    }
+}
+```
+
+ConnectionMaker의 구현 클래스를 결정하고 오브젝트를 만드는 코드를 별도의 메소드로 분리하여 중복 해결 가능. ConnectionMaker의 구현 클래스를 바꿀 필요가 있을 때도 한 군데(connectionMaker())만 수정하면 모든 DAO 팩토리 메소드에 적용됨.
+
+</br>
+
+### 1.4.3 제어권의 이전을 통한 제어관계 역전
+
+제어의 역전이라는 건, 간단히 프로그램의 **제어 흐름 구조가 뒤바뀌는 것** 이라고 설명할 수 있다.
+
+**일반적인 프로그램의 흐름은**
+
+- main() 메소드와 같이 프로그램이 시작되는 지점에서 다음에 사용할 오브젝트를 결정, 생성, 호출하는 식의 작업이 반복
+- 각 오브젝트는 프로그램 흐름을 결정하거나 사용할 오브젝트를 구성하는 작업에 능동적으로 참여함
+- 모든 오브젝트가 능동적으로 자신이 사용할 클래스를 결정하고, 언제 어떻게 만들지를 스스로 관장
+- 모든 종류의 작업을 사용하는 쪽에서 제어하는 구조
+
+**제어의 역전에서는 이런 제어 흐름의 개념을 거꾸로 뒤집는다.**
+
+- 오브젝트가 자신이 사용할 오브젝트를 스스로 선택, 생성하지 않음.
+- 자신도 어떻게 만들어지고 어디서 사용되는지를 알 수 없음
+- 모든 제어 권한을 자신이 아닌 다른 대상에게 위임하기 때문
+- 프로그램의 시작을 담당하는 엔트리 포인트(main() 메소드)를 제외하면 모든 오브젝트는 위임받은 제어 권한을 갖는 특별한 오브젝트에 의해 결정되고 만들어짐
+
+</br>
+
+제어의 역전 개념은 이미 폭넓게 적용되어 있다.
+
+- 서블릿 - 서블릿에 대한 제어 권한을 가진 컨테이너가 적절한 시점에서 서블릿 클래스의 오브젝트를 만들고 그 안에 메소드를 호출
+- 템플릿 메소드 패턴 - 서브클래스가 구현을 담당하지만 언제 어떻게 사용될지는 슈퍼클래스에서 결정. 제어권을 상위 템플릿 메소드에 넘기고 자신은 필요할 때 호출되어 사용되도록 함.
+- 프레임워크 - 프레임워크는 라이브러리의 다른 이름이 아님. 프레임워크는 분명한 제어의 역전 개념이 적용됨
+
+</br>
+
+**프레임워크 VS 라이브러리**
+
+- 라이프러리를 사용하는 애플리케이션 코드는 애플리케이션 흐름을 직접 제어함. 단지 동작 중에 필요한 기능이 있을 때 능동적으로 라이브러리를 사용
+- 프레임워크는 거꾸로 애플리케이션 코드가 프레임워크에 의해 사용됨. 프레임워크 위에 개발한 클래스를 등록해두고, 프레임워크가 흐름을 주도하는 중에 개발자가 만든 애플리케이션을 사용
+
+IoC는 기본적으로 프레임워크만의 기술도 아니고 프레임워크가 꼭 필요한 개념도 아님. 상당히 폭넓게 사용되는 프로그래밍 모델임. IoC를 적용함으로써 설계가 깔끔해지고 유연성이 증가하며 확장성이 좋아지기 때문.
+
+제어의 역전에서는 프레임워크 또는 컨테이너와 같이 애플리케이션 컴포넌트의 생성과 관계설정, 사용, 생명주기 관리 등을 관장하는 존재가 필요함. IoC를 애플리케이션 전반에 걸쳐 본격적으로 적용하려면 스프링과 같은 IoC 프레임워크의 도움을 받는 편이 훨씬 유리하다. 
+
+*스프링은 IoC를 모든 기능의 기초가 되는 기반기술로 삼고 있으며, IoC를 극한까지 적용하고 있는 프레임워크다.*
