@@ -6,6 +6,22 @@
 
 → 1장에서는 스프링이 관심을 갖는 대상인 오브젝트의 설계와 구현, 동작원리에 대해 집중
 
+---
+
+#### [INDEX]
+
+**1.1 [초난감 DAO](https://github.com/Bellroute/Study-Toby-Spring/blob/master/summary/chapter01_%EC%98%A4%EB%B8%8C%EC%A0%9D%ED%8A%B8%EC%99%80_%EC%9D%98%EC%A1%B4%EA%B4%80%EA%B3%84.md#11-%EC%B4%88%EB%82%9C%EA%B0%90-dao)**
+
+**1.2 [DAO의 분리](https://github.com/Bellroute/Study-Toby-Spring/blob/master/summary/chapter01_%EC%98%A4%EB%B8%8C%EC%A0%9D%ED%8A%B8%EC%99%80_%EC%9D%98%EC%A1%B4%EA%B4%80%EA%B3%84.md#12-dao%EC%9D%98-%EB%B6%84%EB%A6%AC)**
+
+**1.3 [DAO의 확장](https://github.com/Bellroute/Study-Toby-Spring/blob/master/summary/chapter01_%EC%98%A4%EB%B8%8C%EC%A0%9D%ED%8A%B8%EC%99%80_%EC%9D%98%EC%A1%B4%EA%B4%80%EA%B3%84.md#13-dao%EC%9D%98-%ED%99%95%EC%9E%A5)**
+
+**1.4 [제어의 역전(IoC)](https://github.com/Bellroute/Study-Toby-Spring/blob/master/summary/chapter01_%EC%98%A4%EB%B8%8C%EC%A0%9D%ED%8A%B8%EC%99%80_%EC%9D%98%EC%A1%B4%EA%B4%80%EA%B3%84.md#14-%EC%A0%9C%EC%96%B4%EC%9D%98-%EC%97%AD%EC%A0%84ioc)**
+
+**1.5 [스프링의 IoC](https://github.com/Bellroute/Study-Toby-Spring/blob/master/summary/chapter01_%EC%98%A4%EB%B8%8C%EC%A0%9D%ED%8A%B8%EC%99%80_%EC%9D%98%EC%A1%B4%EA%B4%80%EA%B3%84.md#15-%EC%8A%A4%ED%94%84%EB%A7%81%EC%9D%98-ioc)**
+
+**1.6 [싱글톤 레지스트리와 오브젝트 스코프](https://github.com/Bellroute/Study-Toby-Spring/blob/master/summary/chapter01_%EC%98%A4%EB%B8%8C%EC%A0%9D%ED%8A%B8%EC%99%80_%EC%9D%98%EC%A1%B4%EA%B4%80%EA%B3%84.md#16-%EC%8B%B1%EA%B8%80%ED%86%A4-%EB%A0%88%EC%A7%80%EC%8A%A4%ED%8A%B8%EB%A6%AC%EC%99%80-%EC%98%A4%EB%B8%8C%EC%A0%9D%ED%8A%B8-%EC%8A%A4%EC%BD%94%ED%94%84)**
+
 </br>
 
 ## 1.1 초난감 DAO
@@ -176,7 +192,7 @@ public class Main {
 
 </br>
 
-## 1.2 DAO 분리
+## 1.2 DAO의 분리
 
 ### 1.2.1 관심사의 분리
 
@@ -1078,16 +1094,12 @@ UserDao를 가져오는 메소드는 하나뿐인데 왜 굳이 이름을 사용
 - 주의할 점은 스프링을 사용하는 애플리케이션에서 만들어지는 모든 오브젝트가 다 빈은 아니라는 것. 
 - 스프링이 직접 그 생성과 제어를 담당하는 오브젝트만 빈에 해당
 
-</br>
-
 #### 빈 팩토리(Bean Factory)
 
 - 스프링의 IoC를 담당하는 핵심 컨테이너
 - 빈을 등록, 생성, 조회, 돌려주는 등 빈을 관리하는 기능
 - 보통은 빈 팩토리를 확장한 애플리케이션 컨텍스트를 이용
 - BeanFactory 라는 인터페이스를 가리키며 getBean()과 같은 메소드가 정의되어 있음
-
-</br>
 
 #### 애플리케이션 컨텍스트(Application Context)
 
@@ -1096,15 +1108,11 @@ UserDao를 가져오는 메소드는 하나뿐인데 왜 굳이 이름을 사용
 - 빈 팩토리라고 부를 때는 주로 빈의 생성과 제어의 관점, 애플리케이션 컨텍스트라고 할 때는 스프링이 제공하는 애플리케션 지원 기능을 포함
 - ApplicationContext라는 인터페이스를 가리킴. ApplicationContext는 BeanFactory를 상속함
 
-</br>
-
 #### 설정정보/설정 메타정보(Configuration metadata)
 
 - 애플리케이션 컨텍스트 또는 빈 팩토리가 IoC를 적용하기 위해 사용하는 메타정보
 - 스프링 설정정보는 컨테이너에 어떤 기능을 세팅하거나 조정하는 경우에도 사용
 - 하지만 그보자는 IoC 컨테이너에 의해 관리되는 애플리케이션 오브젝트를 생성하고 구성할 때 사용
-
-</br>
 
 #### 컨테이너(Container) 또는 IoC 컨테이너
 
@@ -1114,9 +1122,219 @@ UserDao를 가져오는 메소드는 하나뿐인데 왜 굳이 이름을 사용
 - 애플리케이션 컨텍스트 오브젝트는 하나의 애플이케이션에서 여러 개가 만들어져 사용. 이를 통틀어 스프링 컨테이너라고 부를 수 있음
 - '스프링에 빈을 등록하고' -> 스프링 == 스프링 컨테이너 or 애플리케이션 컨텍스트
 
-</br>
-
 #### 스프링 프레임워크
 
 - IoC 컨테이너, 애플리케이션 컨텍스트를 포함해서 스프링이 제공하는 모든 기능을 통틀어 말할 때 주로 사용
 
+</br>
+
+## 1.6 싱글톤 레지스트리와 오브젝트 스코프
+
+스프링의 애플리케이션 컨텍스트는 기존에 직접 만들었던 오브젝트 팩토리와는 중요한 차이점이 있다.
+
+먼저 DaoFactory의 userDao()를 여러 번 호출했을 때 리턴되는 UserDao는 과연 동일한 오브젝트일까?
+
+-> 매번 다른 오브젝트가 리턴된다. 코드를 보면 매번 userDao 메소드를 호출할 때마다 new 연산자에 의해 새로운 오브젝트가 만들어지게 되어있기 때문.
+
+> 오브젝트의 동일성과 동등성
+>
+> - 동일성(identical) : 두 개의 오브젝트가 완전히 같음. 하나의 오브젝트를 두 변수가 가리키는 것.
+> - 동등성(equality) : 두 개의 오브젝트가 동일한 정보를 담고 있음. 두 개의 각기 다른 오브젝트가 메모리상에 존재.
+>
+> 자바 클래스를 만들 때 equals()를 따로 구현하지 않으면 최상위 클래스인 Object 클래스에 구현된 equals()가 사용된다. Object의 equals()는 두 오브젝트의 동일성을 비교한다.
+
+[직접 생성한 DaoFactory 오브젝트 출력 코드]
+
+```java
+DaoFactory factory = new DaoFactory();
+UserDao dao1 = factory.userDao();
+UserDao dao2 = factory.userDao();
+
+System.out.println(dao1);
+System.out.println(dao2);
+```
+
+이 코드를 실행하면 다음과 같은 결과가 나온다.
+
+```
+springbook.dao.UserDao@118f375
+springbook.dao.UserDao@117a8bd
+```
+
+두 개는 각기 다른 값을 가진 동일하지 않은 오브젝트임을 알 수 있다.
+
+[스프링 컨텍스트로부터 가져온 오브젝트 출력 코드]
+
+```java
+ApplicationContext context = new AnnotationConfigurationContext(DaoFactory.class);
+UserDao dao3 = context.getBean("userDao", UserDao.class);
+UserDao dao4 = context.getBean("userDao", UserDao.class);
+
+System.out.println(dao3);
+System.out.println(dao3);
+```
+
+반면, 스프링 애플리케이션 컨텍스트에  DaoFactory를 설정 정보로 등록하고 g etBean() 메소드를 이용해 오브젝트를 가져오면 다음과 같은 결과가 나온다.
+
+```
+springbook.dao.UserDao@ee22f7
+springbook.dao.UserDao@ee22f7
+```
+
+두 오브젝트의 출력 값이 같다. getBean()을 두 번 호출해서 가져온 오브젝트가 동일함을 알 수 있다. 오브젝트 팩토리와 스프링 애플리케이션 컨텍스트의 동작방식에는 무언가 차이가 있는 것 같다.
+
+</br>
+
+### 1.6.1 싱글톤 레지스트리로서의 애플리케이션 컨텍스트
+
+애플리케이션 컨텍스트는 우리가 만들었던 오브젝트 팩토리와 비슷한 방식으로 동작하는 IoC 컨테이너이면서, 싱글톤을 저장하고 관리하는 **싱글톤 레지스트리(singleton registry)** 이다. 스프링은 기본적으로 별다른 설정이 없다면 빈 오브젝트를 싱글톤으로 만든다.
+
+> 싱글톤(singleton)
+>
+> - 애플리케이션 전체 영역에서 하나의 클래스에 단 하나의 인스턴스를 생성하는 것
+>
+> (여기서 싱글톤은 디자인 패턴에서 나오는 싱글톤 패턴과 비슷한 개념이지만 구현 방법은 다름)
+
+#### 서버 애플리케이션과 싱글톤
+
+왜 스프링은 싱글톤으로 빈을 만드나?
+
+- 스프링이 주로 적용되는 대상이 자바 엔터프라이즈 기술을 사용하는 서버환경이기 때문. 
+- 태생적으로 스프링은 엔터프라이즈 시스템을 위해 고안된 기술이기 때문에 서버 환경에서 사용될 때 그 가치가 있다.
+- 매번 클라이언트에서 요청이 올 때마다 각 로직을 담당하는 오브젝트를 새로 만들어서 사용한다면?
+  - 요청 한 번에 5개 오브젝트, 초당 500개의 요청이라고 가정하면 -> 초당 2500개의 새로운 오브젝트가 생성됨
+  - 자바의 오브젝트 생성과 GC 성능이 좋아졌다고 하더라도 부하가 걸리면 서버가 감당하기 힘들다;;
+- 자바 엔터프라이즈 기술의 가장 기본이 되는 서비스 오브젝트인 서블릿 역시 싱글톤으로 동작.
+
+이렇게 애플리케이션 안에 제한된 수, 대개 한 개의 오브젝트만 마들어 사용하는 것이 싱글톤 패턴의 원리이고, 서버환경에서는 서비스 싱글톤의 사용이 권장된다.
+
+</br>
+
+#### 싱글톤 패턴의 한계
+
+자바에서 싱글톤을 구현하는 방법
+
+- 클래스 밖에서는 오브젝트를 생성하지 못하도록 생성자를 private로
+- 생성된 싱글톤 오브젝트를 저장할 수 있는 자신과 같은 타입의 스태택 필드 정의
+- 스태틱 팩토리 메소드인 getInstance()를 만들고 이 메소드가 최초로 호출되는 시접에서 한 번만 오브젝트가 만들어지게 함. 생성된 오브젝트는 스태택 필드에 저장.
+- 한번 오브젝트(싱글톤)가 만들어지고 난 후에는 getInstance() 메소들을 통해 이미 만들진 스태틱 필드에 저장해둔 오브젝트를 넘겨준다.
+
+```java
+public class UserDao {
+    private static UserDao INSTANCE;
+		...
+    private UserDao(ConnectionMaker connectionMaker) {
+        this.connectionMater = connectionMaker;
+    }
+
+    public static synchronized UserDao getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new UserDao(???);
+        }
+
+        return INSTANCE;
+    }
+  
+		...
+}
+
+```
+
+전형적인 싱글톤 패턴을 이용해 UserDao 코드를 수정하면 위와 같다. 코드가 지저분해지기도 하고, ConnectionMaker 오브젝트를 외부에서 넣어주는 것이 불가능해졌다.
+
+일반적으로 싱글톤 패턴 구현 방식에는 다음과 같은 문제가 있음.
+
+- **private 생성자를 갖고 있기 때문에 상속할 수 없다.**
+  - private 생성자를 가진 클래스는 다른 생성자가 없다면 상속이 불가능. 
+  - 객체지향적인 설계의 장점을 적용하기 어려워짐.
+  - 객체지향의 특징이 적용되지 않는 스태틱 필드와 메소드 역시 동일한 문제점을 가짐.
+- **싱글톤은 테스트하기가 힘들다.**
+  - 싱글톤은 만들어지는 방식이 제한적이기 때문에 테스트에 사용될 목 오브젝트 등으로 대체하기 힘듦
+  - 싱글톤은 초기화 과정에서 생성자 등을 통해 사용할 오브젝트를 주입하기 힘들기 때문에 필요한 오브젝트는 직접 만들어 사용할 수 밖에 없음
+- **서버환경에서는 싱글톤이 하나만 만들어지는 것을 보장하지 못한다.**
+  - 서버에서 클래스 로더를 어떻게 구성하고 있느냐에 따라서 싱글톤 클래스임에도 하나 이상의 오브젝트가 만들어질 수 있음.
+  - 여러 개의 JVM에 분산돼서 설치가 되는 경우에도 각각 독립적으로 오브젝트가 생겨 싱글톤으로서 가치가 떨어짐.
+- **싱글톤의 사용은 전역 상태를 만들 수 있기 때문에 바람직하지 못하다.**
+  - 아무 객체나 자유롭게 접근하고 수정하고 공유하는 전역 상태를 갖는 것은 객체지향 프로그래밍에서는 권장 x.
+  - 싱글톤은 스태틱 메소드를 이용해 언제든지 쉽게 접근할 수 있기 때문에 애플리케이션 어디서든지 사용되어 전역 상태로 사용되기 쉬움.
+
+</br>
+
+#### 싱글톤 레지스트리
+
+자바의 기본적인 싱글톤 패턴의 구현 방식은 여러 가지 단점이 있기 때문에, 스프링은 직접 싱글톤 형태의 오브젝트를 만들고 관리하는 기능을 제공한다. 그것이 바로 **싱글톤 레지스트리(singleton registry)** !
+
+- 스프링 컨테이너는 싱글톤을 생성하고, 관리하고, 공급하는 싱글톤 관리 컨테이너이기도 하다.
+
+- 싱글톤 레지스트리의 장점은 스태틱 메소드와 private 생성자를 사용해야 하는 비정상적인 클래스가 아니라 <u>평범한 자바 클래스를 싱글톤으로 활용하게 해준다</u>는 점
+  - public 생성자를 가질 수 있음
+  - 싱글톤으로 사용돼야 하는 환경이 아니면 간단히 오브젝트 생성 가능 -> 테스트 환경에서 자유롭게 오브젝트 만들 수 있음
+  - 생성자 파라미터를 이용해서 사용할 오브젝트를 넣어주게 하는 것도 가능
+  - (중요) 객체지향적인 설계 방식과 원칙, 디자인 패턴 등을 적용하는 데 아무런 제약이 없다!
+- 스프링이 빈을 싱글톤으로 만드는 것은 결국 오브젝트의 생성 방법을 제어하는 IoC 컨테이너로서의 역할임
+
+</br>
+
+### 1.6.2 싱글톤과 오브젝트의 상태
+
+싱글톤은 멀티스레드 환경이라면 여러 스레드가 동시에 접근해서 사용할 수 있음 -> 상태 관리에 주의!!
+
+기본적으로 싱글톤이 멀티스레드 환경에서 서비스 형태의 오브젝트로 사용되는 경우에는 상태 정보를 내부에 가지고 있지 않은 **무상태 방식**으로 만들어져야 함.
+
+상태가 없는 방식으로 클래스를 만드는 경우에 각 요청에 대한 정보나, DB나 서버의 리소스로부터 생성한 정보는 어떻게 다뤄야 할까?
+
+-> 파라미터와 로컬 변수, 리턴 값 등을 이용. 얘네는 매번 새로운 값을 저장할 독립적인 공간(스택)이 만들어지기 때문에 덮어쓸 일 없음.
+
+[인스턴스 변수를 사용하도록 수정한 UserDao]
+
+```java
+public class UserDao {
+    private ConnectionMaker connectionMater; // 초기에 설정하면 사용 중에는 바뀌지 않는 읽기전용 인스턴스 변수
+    private Connection c;
+    private User user; // 매번 새로운 값으로 바뀌는 정보를 담은 인스턴스 변수. 멀티스레드 환경에서 심각한 문제 발생
+
+    public User get(String id) throws ClassNotFoundException, SQLException {
+        this.c = connectionMater.makeConnection();
+
+        PreparedStatement ps = c.prepareStatement(
+                "select * from users where id = ?");
+        ps.setString(1, id);
+
+        ResultSet rs = ps.executeQuery();
+        rs.next();
+        this.user = new User();
+        this.user.setId(rs.getString("id"));
+        this.user.setName(rs.getString("name"));
+        this.user.setPassword(rs.getString("password"));
+
+        rs.close();
+        ps.close();
+        c.close();
+
+        return this.user;
+    }
+}
+```
+
+기존에 만들었던 UserDao와 다른 점은 기존에 로컬 변수 였던 Connection과 User 클래스를 인스턴스 필드로 선언했다는 것
+
+-> 싱글톤으로 만들어져서 멀티스레드 환경에서 사용하면 심각한 문제가 발생. 스프링의 싱글톤 **빈으로 사용되는 클래스를 만들 때는 기존의 UserDao 처럼 개별적으로 바뀌는 정보는 로컬 변수로 정의하거나, 파라미터로 주고받으면서 사용** 해야함.
+
+하지만 기존의 UserDao에서도 인스턴스 변수로 사용한 ConnectionMaker는 괜찮다.
+
+-> connectionMaker는 읽기 전용의 정보이기 때문. DaoFactory에 @Bean을 붙여 만들었으니 스프링이 관리하는 빈이고, 하나의 오브젝트만 생성될 것임. 이렇게 **자신이 사용하는 다른 싱글톤 빈을 저장하려는 용도라면 인스턴스 변수를 사용해도 좋다.**
+
+-> 읽기 전용의 속성을 가진 정보도 싱글톤에서 인스턴스 변수로 사용해도 좋다. 단순한 읽기전용 값이라면 static final이나 final로 선언하는 편이 좋음.
+
+</br>
+
+### 1.6.3 스프링 빈의 스코프
+
+스프링이 관리하는 <u>빈이 생성되고, 존재하고, 적용되는 범위</u>에 대해 알아보자. 스프링에서는 이것을 **빈의 스코프(scope)** 라고 함
+
+- **싱글톤 스코프** - 스프링 빈의 기본 스코프. 컨테이너 내에 한 개의 오브젝트만 만들어져서, 강제로 제거하지 않는 한 계속 유지. 대부분의 빈이 여기에 해당.
+- **프로토타입 스코프** - 컨테이너에 빈을 요청할 때마다 매번 새로운 오브젝트 생성
+- **요청 스코프** - HTTP 요청이 생길 때마다 생성
+- **세션 스코프** - 웹의 세션과 유사한 스코프
+
+(싱글톤 스코프 외의 스코프는 10장에서 자세히 다룬다)

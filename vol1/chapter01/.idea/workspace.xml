@@ -2,21 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4491ecfb-2480-4841-8b74-32ddd2b0f221" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/../../.gitIgnore" beforeDir="false" afterPath="$PROJECT_DIR$/../../.gitIgnore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../summary/chapter01_오브젝트와_의존관계.md" beforeDir="false" afterPath="$PROJECT_DIR$/../../summary/chapter01_오브젝트와_의존관계.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/chapter01.iml" beforeDir="false" afterPath="$PROJECT_DIR$/chapter01.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/springbook/user/UserDaoTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/springbook/user/dao/AccountDao.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/springbook/user/dao/ConnectionMaker.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/springbook/user/dao/DConnectionMaker.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/springbook/user/dao/DaoFactory.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/springbook/user/dao/MessageDao.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/springbook/user/dao/UserDao.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/springbook/user/domain/User.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/springbook/user/dao/UserDao.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/springbook/user/dao/UserDao.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/target/" />
@@ -31,17 +19,31 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/springbook/user/dao/DaoFactory.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="330">
-              <caret line="22" column="5" lean-forward="true" selection-start-line="22" selection-start-column="5" selection-end-line="22" selection-end-column="5" />
+            <state relative-caret-position="405">
+              <caret line="27" column="5" selection-start-line="27" selection-start-column="5" selection-end-line="27" selection-end-column="5" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#239#240#0" expanded="true" />
                 <element signature="e#295#296#0" expanded="true" />
                 <element signature="e#333#334#0" expanded="true" />
                 <element signature="e#389#390#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/main/java/springbook/user/dao/UserDao.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="465">
+              <caret line="31" column="13" selection-start-line="31" selection-start-column="13" selection-end-line="31" selection-end-column="13" />
+              <folding>
+                <element signature="imports" expanded="true" />
+                <element signature="e#208#209#0" expanded="true" />
+                <element signature="e#262#263#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -59,8 +61,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/springbook/user/UserDaoTest.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="210">
-              <caret line="14" column="42" selection-start-line="14" selection-start-column="42" selection-end-line="14" selection-end-column="42" />
+            <state relative-caret-position="480">
+              <caret line="32" selection-start-line="32" selection-end-line="32" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -73,6 +75,19 @@
           <provider selected="true" editor-type-id="text-editor">
             <state>
               <caret column="29" selection-start-column="29" selection-end-column="29" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/springbook/user/dao/MessageDao.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state>
+              <caret lean-forward="true" />
+              <folding>
+                <element signature="e#157#158#0" expanded="true" />
+                <element signature="e#211#212#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -113,6 +128,7 @@
         <option value="$PROJECT_DIR$/pom.xml" />
         <option value="$PROJECT_DIR$/src/main/java/springbook/user/dao/DaoFactory.java" />
         <option value="$PROJECT_DIR$/src/main/java/springbook/user/UserDaoTest.java" />
+        <option value="$PROJECT_DIR$/src/main/java/springbook/user/dao/UserDao.java" />
       </list>
     </option>
   </component>
@@ -215,10 +231,6 @@
               <item name="user" type="462c0819:PsiDirectoryNode" />
               <item name="dao" type="462c0819:PsiDirectoryNode" />
             </path>
-            <path>
-              <item name="chapter01" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-            </path>
           </expand>
           <select />
         </subPane>
@@ -232,7 +244,7 @@
     <property name="Repository.Attach.Sources" value="false" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1606571466507" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1606655634373" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="project.structure.last.edited" value="Libraries" />
@@ -287,12 +299,12 @@
       <updated>1606217571710</updated>
       <workItem from="1606217574104" duration="7665000" />
       <workItem from="1606468129310" duration="1337000" />
-      <workItem from="1606566833120" duration="3833000" />
+      <workItem from="1606566833120" duration="7521000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="12835000" />
+    <option name="totallyTimeSpent" value="16523000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="28" width="1680" height="1022" extended-state="0" />
@@ -369,16 +381,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/springbook/user/dao/UserDao.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="75">
-          <caret line="7" selection-start-line="7" selection-end-line="11" selection-end-column="5" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/springbook/user/dao/DConnectionMaker.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="60">
@@ -393,17 +395,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="75">
           <caret line="5" column="21" selection-start-line="5" selection-start-column="21" selection-end-line="5" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/springbook/user/dao/MessageDao.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="30">
-          <caret line="2" column="13" selection-start-line="2" selection-start-column="13" selection-end-line="2" selection-end-column="13" />
-          <folding>
-            <element signature="e#157#158#0" expanded="true" />
-            <element signature="e#211#212#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -482,24 +473,47 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/springbook/user/UserDaoTest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="210">
-          <caret line="14" column="42" selection-start-line="14" selection-start-column="42" selection-end-line="14" selection-end-column="42" />
+        <state relative-caret-position="480">
+          <caret line="32" selection-start-line="32" selection-end-line="32" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/springbook/user/dao/MessageDao.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret lean-forward="true" />
+          <folding>
+            <element signature="e#157#158#0" expanded="true" />
+            <element signature="e#211#212#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/springbook/user/dao/DaoFactory.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="330">
-          <caret line="22" column="5" lean-forward="true" selection-start-line="22" selection-start-column="5" selection-end-line="22" selection-end-column="5" />
+        <state relative-caret-position="405">
+          <caret line="27" column="5" selection-start-line="27" selection-start-column="5" selection-end-line="27" selection-end-column="5" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#239#240#0" expanded="true" />
             <element signature="e#295#296#0" expanded="true" />
             <element signature="e#333#334#0" expanded="true" />
             <element signature="e#389#390#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/springbook/user/dao/UserDao.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="465">
+          <caret line="31" column="13" selection-start-line="31" selection-start-column="13" selection-end-line="31" selection-end-column="13" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#208#209#0" expanded="true" />
+            <element signature="e#262#263#0" expanded="true" />
           </folding>
         </state>
       </provider>
