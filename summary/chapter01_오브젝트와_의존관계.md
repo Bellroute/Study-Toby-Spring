@@ -24,6 +24,8 @@
 
 **1.7 [의존관계 주입(DI)](https://github.com/Bellroute/Study-Toby-Spring/blob/master/summary/chapter01_%EC%98%A4%EB%B8%8C%EC%A0%9D%ED%8A%B8%EC%99%80_%EC%9D%98%EC%A1%B4%EA%B4%80%EA%B3%84.md#17-%EC%9D%98%EC%A1%B4%EA%B4%80%EA%B3%84-%EC%A3%BC%EC%9E%85di)**
 
+**1.8 [XML을 이용한 설정](https://github.com/Bellroute/Study-Toby-Spring/blob/master/summary/chapter01_%EC%98%A4%EB%B8%8C%EC%A0%9D%ED%8A%B8%EC%99%80_%EC%9D%98%EC%A1%B4%EA%B4%80%EA%B3%84.md#18-XML%EC%9D%84-%EC%9D%B4%EC%9A%A9%ED%95%9C-%EC%84%A4%EC%A0%95)**
+
 </br>
 
 ## 1.1 초난감 DAO
@@ -1669,3 +1671,328 @@ DI의 장점은 관심사의 분리를 통해 얻어지는 높은 응집도에�
 스프링은 전통적으로 수정자 메소드를 이용한 DI 방법을 가장 많이 사용해 왔다. DaoFactory 같은 자바 코드 대신 XML을 사용하는 경우에는 자바빈 규약을 따르는 수정자 메소드가 가장 사용하기 편리했기 때문.
 
 실제로 스프링은 생성자, 수정자 메소드, 초기화 메소드를 이용한 방법 외에도 다양한 의존관계 주입 방법을 지원하는데, 자세한 내용은 Vol.2에서 다룰 것임.
+
+</br>
+
+## 1.8 XML을 이용한 설정
+
+본격적인 범용 DI 컨테이너를 사용하면서 오브젝트 사이의 의존정보는 일일이 자바 코드로 만들어주기 번거롭다. 
+
+- DaoFacoty를 살펴보면 대부분 틀에 박힌 구조가 반복된다.
+- DI 구성이 바뀔 때마다 자바 코드를 수정하고 클래스를 다시 컴파일하는 것도 귀찮은 작업이다.
+
+스프링은 자바 클래스를 이용하는 것 외에도, 다양한 방법을 통해 DI 의존관계 설정정보를 만들 수 있다. 가장 대표적인 것이 XML
+
+**Why XML?**
+
+- 단순한 텍스트 파일이기 때문에 다루기 쉬움
+- 쉽게 이해 가능. 컴파일과 같은 별도의 빌드 작업이 없음
+- 환경이 달라져 오브젝트의 관계가 바뀌는 경우에도 빠르게 변경사항 반영 가능
+- 스키마나 DTO를 이용해 정해진 포맷을 따라 작성됐는지 확인할 수 있음
+
+이제 DaoFactory 자바 코드에 담겨 있던, DI를 위한 오브젝트 의존관계 정보를 XML을 이용해 만들어보자.
+
+### 1.8.1 XML 설정
+
+스프링의 애플리케이션 컨텍스트는 XML에 담긴 DI 정보를 활용할 수 있다.
+
+- DI 정보가 담긴 XML 파일은 \<beans>를 루트 엘리먼트로 사용. \<beans> 안에는 여러 개의 \<bean>정의 가능
+- @Configuration을 \<beans>, @Bean을 \<bean>에 대응해서 생각하면 이해하기 쉬움
+
+하나의 @Bean 메소드를 통해 얻을 수 있는 빈의 DI 정보는 다음 세 가지다.
+
+- 빈의 이름 : @Bean 메소드 이름이 빈의 이름. getBean()에서 사용됨
+- 빈의 클래스 : 빈 오브젝트를 어떤 클래스를 이용해서 만들지를 정의
+- 빈의 의존 오브젝트 : 빈의 생성자나 수정자 메소드를 통해 의존 오브젝트를 넣어줌. 의존 오브젝트도 하나의 빈이므로 이름이 있을 것이고, 그 이름에 해당하는 메소드를 호출해서 의존 오브젝트를 가져옴.
+
+XML에서 \<bean>을 사용해도 이 세 가지 정보를 정의할 수 있다. 더 이상 의존하고 있는 오브젝트가 없는 경우에는 세 번째 의존 오브젝트 정보는 생략할 수 있음. XML은 자바 코드처럼 유연하게 정의될 수 있는 것이 아니므로, 핵심 요소를 잘 짚어서 그에 해당하는 태그와 애트리뷰트가 무엇인지 알아야 함.
+
+#### connectionMaker() 전환
+
+DaoFactory의 connectionMaker() 메소드에 해당하는 빈을 XML로 정의해보자.
+
+|             | 자바 코드 설정정보      | XML 설정정보                |
+| ----------- | ----------------------- | --------------------------- |
+| 빈 설정파일 | @Configuration          | \<beans>                    |
+| 빈의 이름   | @Bean methodName()      | <bean id="methodName"       |
+| 빈의 클래스 | return new BeanClass(); | class="a.b.c... BeanClass"> |
+
+DI 정의 세 가지 중에서 빈의 이름과 빈 클래스 두 가지를 \<bean> 태그의 id와 class 애트리뷰트를 이용해 정의할 수 있다. class 애트리뷰터에 지정하는 것은 자바 메소드의 리턴 타입이 아니라 오브젝트를 만들 때 사용하는 클래스 이름이라는 점에 주의! 클래스 이름은 패키지까지 모두 포함해야 함. (XML에서 일일이 패키지까지 적어야 한다는 점이 번거로울 수 있지만 Vol.2에서 자동완성 기능을 활용할 수 있으니 걱정 마시길)
+
+connectionMaker() 메소드를 \<bean>태그로 전환하면 다음과 같다.
+
+```java
+@Bean
+public ConnectionMaker connectionMaker() {
+  return new DConnectionMaker();
+}
+```
+
+```xml
+<bean id="connectionMaker" class="springbook...DConnectionMaker" />
+```
+
+DI 컨테이너는 이 \<bean>태그의 정보를 읽어서 connectionMaker()와 같은 작업을 진행한다.
+
+#### userDao() 전환
+
+이번에는 userDao 메소드를 XML로 변환해보자. 여기서 관심을 가질 것은 수정자 메소드를 이용해 의존관계를 주입해주는 부분이다. 
+
+- 자바빈의 관례를 따라서 수정자 메소드는 프로퍼티가 된다. 
+- 프로퍼티 이름은 메소드 이름에서 set을 제외한 나머지 부분을 사용한다. setConnectionMaker()라는 이름의 메소드가 있다면 connectionMaker()라는 프로퍼티를 갖는다고 할 수 있음.
+- XML에서는 \<property> 태그를 사용해 의존 오브젝트와의 관계를 정의한다. name과 ref라는 두 개의 애트리뷰트를 갖음
+  - name은 프로퍼티의 이름. 프로퍼티 이름으로 수정자 메소드를 알 수 있음.
+  - ref는 수정자 메소드를 통해 주입해줄 오브젝트 빈의 이름.
+
+```java
+userDao.setConnectionMaker(connectionMaker());
+```
+
+- 여기서 userDao.setConnectionMaker()는 userDao 빈의 connectionMaker 프로퍼티를 이용해 의존관계 정보를 주입한다는 뜻. -> name 애트리뷰트
+- 메소드의 파라미터로 넣는 connectionMaker()는 connectionMaker() 메소드를 호출해서 리턴하는 오브젝트를 주입하라는 의미. -> ref 애트리뷰트
+
+```xml
+<bean id="userDao" class="springbook.dao.UserDao">
+  <property name="connectionMaker" ref="connectionMaker" />
+</bean>
+```
+
+#### XML의 의존관계 주입 정보
+
+\<beans>로 전환한 두 개의 \<bean> 태그를 감싸주면 DaoFactory로 부터 XML로의 전환 작업이 끝난다.
+
+```xml
+<beans>
+  <bean id="connectionMaker" class="springbook...DConnectionMaker" />
+  <bean id="userDao" class="springbook.dao.UserDao">
+  	<property name="connectionMaker" ref="connectionMaker" />
+	</bean>
+</beans>
+```
+
+- \<property> 태그의 name과 ref는 그 의미가 다르므로 이름이 같더라도 어떤 차이가 있는지 구별할 수 있어야 함.
+  - name 애트리뷰트 - DI에 사용할 수정자 메소드의 프로퍼티 이름
+  - ref 애트리뷰트 - 주입할 오브젝트를 정의한 빈의 DI
+
+- 만약 connectionMaker 빈을 myConnectionMaker라는 이름으로 변경했다면 userDao 빈의 connectionMaker 프로퍼티 ref 값도 따라서 변경해줘야 한다.
+
+- 같은 인터페이스를 구현한 의존 오브젝트를 여러 개 정의해두고 그중에서 원하는 걸 골라서 DI하는 경우라면, 각 빈의 이름을 독립적으로 만들어 두고 ref 애트리뷰트를 이용해 DI 받을 빈을 지정해주면 된다.
+
+> DTD와 스키마
+>
+> XML는 미리 정해진 구조를 따라서 작성됐는지 검사할 수 있다. XML의 구조를 정의하는 방법에는 DTD와 스키마(schema)가 있다.
+>
+> - DTD
+>
+> ```xml
+> <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN"
+> 	"http://www.springframework.org/dtd/spring-beans-2.0 dtd">
+> ```
+>
+> - 스키마
+>
+> ```xml
+> <beans xmlns="http://www.springframework.org/schema/beans"
+>        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+>        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+> ```
+>
+> 스프링은 DI를 위한 기본 태그인 \<beans>, \<bean> 외에도 특별한 목적을 위해 별도의 태그를 사용할 수 있는 방법을 제공한다. 이 태그들은 별개의 스키마 파일에 정의되어 있고 독립적인 네임스페이스를 사용해야만 한다. 따라서 이런 태그를 사용하려면 DTD 대신 네임스페이스가 지원되는 스키마를 사용해야 한다. (특별한 이유가 없다면 스키마를 사용하는 편이 바람직)
+
+</br>
+
+### 1.8.2 XML을 이용하는 애플리케이션 컨텍스트
+
+애플리케이션 컨텍스트가 DaoFactory 대신 XML 설정정보를 활용하도록 만들어보자. 
+
+- XML에서 빈의 의존관계 정보를 이용하는 IoC/DI 작업에는 GenericXmlApplicationContext를 사용한다. 
+- 생성자 파라미터로 XML 파일의 클래스를 지정해주면 된다. XML 설정파일은 클래스패스 최상단에 두면 편하다. (xml파일 위치가 resources에 있어야 하는 듯 하다..!) 
+- 애플리케이션 컨텍스트가 사용하는 XML 설정파일의 이름은 관례를 따라 applicationContext.xml이라고 만든다.
+
+[applicationContext.xml]
+
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="connectionMaker" class="springbook.user.dao.DConnectionMaker"/>
+    <bean id="userDao" class="springbook.user.dao.UserDao">
+        <property name="connectionMaker" ref="connectionMaker"/>
+    </bean>
+</beans>
+```
+
+다음은 UserDaoTest의 애플리케이션 컨텍스트 생성 부분을 수정한다. AnnotationConfigApplicationContext 대신 GenericXmlApplicationContext를 이용해 다음과 같이 애플리케이션 컨텍스틀 생성하게 만든다.
+
+```java
+Application context = new GenericXmlApplicationContext("applicationContext.xml");
+```
+
+UserDaoTest를 실행해서 동일한 결과가 나온다면 XML 설정파일을 사용해서 변환하는 작업을 모두 마친 것이다.
+
+GenericXmlApplicationContext 외에도 ClassPathXmlApplicationContext를 이용해 XML로부터 설정정보를 가져오는 애플리케이션 컨텍스트를 만들 수 있다.
+
+- GenericXmlApplicationContext는 클래스패스 뿐 안니라 다양한 소스로부터 설정파일 읽어옴.
+
+- ClassPathXmlApplicationContext는 XML 파일을 클래스패스에서 가져올 때 사용할 수 있는 편리한 기능 추가된 것
+
+  - 예를들어 springbook.user.dao 안에 daoContext.xml이라는 설정파일을 만들었다면
+
+    - GenericXmlApplicationContext
+
+      ```java
+      new GenericXmlApplicationContext("springbook/user/dao/daoContext.xml");
+      // 클래스패스 루트로부터 파일의 위치를 지정해야하므로 길어진다.
+      ```
+
+    - ClassPathXmlApplicationContext
+
+      ```java
+      new ClassPathXmlApplicationContext("daoContext.xml", UserDao.class);
+      // UserDao는 같은 daoContext.xml와 같은 클래스패스 위에 있으므로 UserDao를 함께 넣어주면 XML 파일의 위치를 UserDao의 위치로부터 상대적으로 지정할 수 있다.
+      ```
+
+</br>
+
+### 1.8.3 DataSource 인터페이스로 변환
+
+#### DataSource 인터페이스 적용
+
+ConnectionMaker는 DB 커넥션을 생성해주는 기능 하나만을 정의한 매우 단순한 인터페이스다. 사실 자바에서는 DB 커넥션을 가져오는 오브젝트의 기능을 추상화해서 비슷한 용도로 사용할 수 있게 만들어진 DataSource라는 인터페이스가 이미  존재한다.
+
+일반적으로 DataSource를 구현해서 DB 커넥션을 제공하는 클래스를 만들 일은 거의 없다. 이미 다양한 방법으로 DB 연결과 pooling 기능을 갖춘 많은 DataSource 구현 클래스가 존재하고, 이를 가져다 사용하면 충분하기 때문.
+
+DataSource 인터페이스와 다양한 DataSource 구현 클래스를 사용할 수 있도록 UserDao를 리팩토링해보자.
+
+- 일단 UserDao에 주입될 의존 오브젝트의 타입을 ConnectionMaker에서 DataSource로 변경
+- 그리고 DB 커넥션을 가져오는 코드를 makeConnection()에서 getConnection() 메소드로 바꿔준다.
+
+- DataSource의 getConnection()은 SQLException만 던지기 때문에 ClassNotFoundException은 제거해도 된다.
+
+```java
+import javax.sql.DataSource;
+
+public class UserDao {
+    private DataSource dataSource;
+   
+    public void add(User user) throws SQLException {
+        Connection c = dataSource.getConnection();
+      	...
+    }
+
+    public User get(String id) throws SQLException {
+        this.c = dataSource.getConnection();
+      	...
+    }
+
+    public void setDataSource(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+}
+
+```
+
+다음은 DataSource 구현 클래스가 필요하다. 앞에서 만들었던 DriverManager를 사용하는 SimpleConnectionMaker처럼 단순한 DataSource 구현 클래스를 하나 가져다 사용하자. 스프링이 제공해주는 DataSource 구현 클래스 중에 테스트환경에서 간단히 사용할 수 있는 SimpleDriverDataSource라는 것이 있다. 이 클래스를 사용하도록 DI를 재구성할 것이다.
+
+SimpleDriverDataSource는 DB 연결에 필요한 필수 정보를 제공받을 수 있도록 여러 개의 수정자 메소드를 가진다. (JDBC 드라이버 클래스, JDBC URL, 아이디, 비밀번호 등) 다음 라이브러리를 프로젝트에 추가한다.
+
+```
+org.springframework.jdbd-3.0.7.RELEASE.jar
+```
+
+#### 자바 코드 설정 방식
+
+- DaoFactory의 connectionMaker() 메소드를 dataSource()로 변경하고 SimpleDriverDatasource의 오브젝트를 리턴하게 한다. 
+- DaoFactory의 userDao() 메소드에서 DataSource 타입의 dataSource()를 DI 받는다.
+
+```java
+package springbook.user.dao;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.datasource.SimpleDriverDataSource;
+
+import javax.sql.DataSource;
+
+@Configuration
+public class DaoFactory {
+
+    @Bean
+    public UserDao userDao() {
+        UserDao userDao = new UserDao();
+        userDao.setDataSource(dataSource());
+        return userDao;
+    }
+
+    @Bean
+    public DataSource dataSource() {
+        SimpleDriverDataSource dataSource = new SimpleDriverDataSource();
+
+      	// DB 연결정보를 수정자 메소드를 통해 넣어준다. 이렇게 하면 오브젝트 레벨에서 DB 연결 방식을 변경 가능
+        dataSource.setDriverClass(com.mysql.jdbc.Driver.class);
+        dataSource.setUrl("jdbc:mysql://localhost/springbook");
+        dataSource.setUsername("spring");
+        dataSource.setPassword("book");
+
+        return dataSource;
+    }
+}
+```
+
+#### XML 설정 방식
+
+- 먼저 id가 connectionMaker인 \<bean>을 없애고 dataSource라는 이름의 \<bean>을 등록한다.
+- 그리고 클래스를 SimpleDriverDataSource로 변경
+
+```xml
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource"/>
+    <bean id="userDao" class="springbook.user.dao.UserDao">
+        <property name="dataSource" ref="dataSource"/>
+```
+
+그런데 문제는 이 \<bean> 설정으로 SimpleDriverDataSource의 오브젝트를 만드는 것까지는 가능하지만, 오브젝트의 수정자로 넣어준 DB 접속정보는 나타나 있지 않다는 점이다. XML에서는 어떻게 DB 연결정보를 넣도록 설정을 만들 수 있을까?
+
+</br>
+
+### 1.8.4 프로퍼티 값의 주입
+
+#### 값 주입
+
+DaoFactory의 dataSource() 메소드에서 본 것 처럼, 다른 빈 오브젝트의 레퍼런스가 아닌 단순 정보도 오브젝트를 초기화하는 과정에서 수정자 메소드에 넣을 수 있다. 텍스트나 단순 오브젝트 등을 수정자 메소드에 넣어주는 것을 스프링에서는 '값을 주입한다'고 말한다. 성격은 다르지만 일종의 DI라고 볼 수 있다. 사용할 오브젝트 자체를 바꾸지는 않지만 오브젝트의 특성은 외부에서 변경할 수 있기 때문.
+
+스프링의 빈으로 등록될 클래스에 수정자 메소드가 정의되어 있다면 \<property>를 사용해 주입할 정보를 지정할 수 있다는 점에서는 ref와 동일. 하지만 다른 빈 오브젝트의 레퍼런스(ref)가 아니라 단순 값(value)를 주입해주는 것이기 때문에 value 애트리뷰트를 사용한다.
+
+```xml
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
+        <property name="driverClass" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost/toby"/>
+        <property name="username" value="root"/>
+        <property name="password" value="1111"/>
+    </bean>
+```
+
+value 애트리뷰트에 들어가는 것은 다른 빈의 이름이 아니라 실제로 수정자 메소드의 파라미터로 전달되는 스트링 그 자체다. 
+
+#### value 값의 자동 변환
+
+한 가지 이상한 점이 있다. url, username, password는 스트링 타입이니 원래 텍스트로 정의되는 value 애트리뷰트의 값을 사용하는 건 문제 없다. 그런데 driverClass는 스트링 타입이 아니라 java.lang.Class 타입인데도 value에 들어가 있다.
+
+이런 설정이 가능한 이유는 **스프링이 프로퍼티의 값을, 수정자 메소드의 파라미터 타입을 참고해서 적절한 형태로 변환해주기 때문이다.**
+
+setDriverClass() 메소드의 파라미터 타입이 Class임을 확인하고 "com.mysql.jdbc.Driver"라는 텍스트 값을 com.mysql.jdbc.Driver.class 오브젝트로 자동 변경해주는 것이다. 내부적으로 다음과 같은 변환 작업이 일어난다.
+
+```java
+Class driverClass = Class.forName("com.mysql.jdbc.Driver");
+dataSource.setDriverClass(driverClass);
+```
+
+스프링은 value의 지정한 텍스트 값을 적절한 자바 타입으로 변환해준다.
+
+- Integer, Double, String, Boolean 같은 기본 타입은 물론
+- Class, URL, File, Charset과 같은 오브젝트도 변환 가능
+- 값이 여러 개라면 List, Map, Set, Properties나 배열 타입으로도 값의 주입이 가능함.
+
+이제 UserDao는 XML 설정파일을 사용해 스프링 컨테이너 위에서 동작하는 좀 더 깔끔한 코드로 변신했다.
+
