@@ -19,6 +19,8 @@
 
 **2.1 [UserDaoTest 다시 보기](https://github.com/Bellroute/Study-Toby-Spring/blob/master/summary/chapter02_%ED%85%8C%EC%8A%A4%ED%8A%B8.md#21-userdaotest-%EB%8B%A4%EC%8B%9C-%EB%B3%B4%EA%B8%B0)**
 
+**2.2. [UserDaoTest 개선](https://github.com/Bellroute/Study-Toby-Spring/blob/master/summary/chapter02_%ED%85%8C%EC%8A%A4%ED%8A%B8.md#22-userdaotest-%EA%B0%9C%EC%84%A0)**
+
 </br>
 
 ## 2.1 UserDaoTest 다시 보기
@@ -132,3 +134,126 @@ UserDaoTest의 한 가지 특징은 테스트할 데이터가 코드를 통해 �
   - 간단히 실행 가능한 main() 메소드라도 매번 실행하는 것은 번거로움
   - 수백 개의 DAO가 있고 그에 대한 수백 개의 main() 메소드가 만들어진다면 메소드를 수백 번 실행하는 수고가 필요
   - 이를 종합해서 전체 기능에 대한 테스트 결과를 정리하는 것도 큰 작업이 됨
+
+</br>
+
+## 2.2 UserDaoTest 개선
+
+UserDaoTest의 두 가지 문제점을 개선해보자.
+
+### 2.2.1 테스트 검증의 자동화
+
+모든 테스트는 다음과 같은 결과를 가질 수 있다.
+
+- 성공
+- 실패
+  - 테스트가 진행되는 동안 에러가 발생하는 경우
+  - 결과가 기대한 것과 다르게 나오는 경우
+
+테스트 중에 에러가 발생하는 것은 쉽게 확인 가능. 하지만 테스트가 실패하는 것은 별도의 확인 작업과 그 결과가 있어야만 알 수 있다.
+
+기존의 테스트 코드에서는 get()에서 가져온 결과를 사람이 눈으로 확인하도록 단순히 콘솔에 출력하기만 했다면, 이번에는 테스트 코드에서 결과를 직접 확인하고, 기대한 결과와 달라서 실패했을 경우에는 "테스트 실패", 모든 확인 작업을 통과하면 "테스트 성공"이라고 출력하도록 하겠다.
+
+[수정 전]
+
+```java
+System.out.println(user2.getName());
+System.out.println(user2.getPassword());
+System.out.println(user2.getId() + " 조회 성공");  
+```
+
+[수정 후]
+
+```java
+if (!user.getName().equals(user2.getName())) {
+  System.out.println("테스트 실패 (name)");
+}
+else if (!user.getPassword().equals(user2.getPassword())) {
+  System.out.println("테스트 실패 (password)");
+}
+else {
+  System.out.println("조회 테스트 성공");
+}
+```
+
+이렇게 해서 테스트의 수행과 테스트 값 적용, 그리고 결과를 검증하는 것까지 모두 자동화했다.
+
+자동화된 테스트를 위한 xUnit 프레임워크를 만든 켄트 벡은 "테스트란 개발자가 마음 편하게 잠자리에 들 수 있게 해주는 것"이라고 했다. 짧은 시간에 화면에서 하는 수동 테스트로는 당장 수정한 기능의 가장 간단한 케이스를 확인하기에도 벅차기 때문에 전체 기능에 문제가 없는지 점검하는 것은 불가능에 가깝다. 하지만 만들어진 코드의 기능을 모두 점검할 수 있는 포괄적인 테스트(comprehensive test)를 만들면서부터는, 개발한 애플리케이션은 이후에 어떤 과감한 수정을 하고 나서도 테스트를 통해 코드의 기능 점검뿐 아니라 그 변경에 영향을 받는 부분이 정확히 확인된다면 빠르게 조치를 취할 수 있다.
+
+이렇게 개발 과정 또는 유지보수를 하면서 기존 애플리케이션 코드에 수정을 할 때 마음의 평안을 얻고, 자신이 만지는 코드에 대해 항상 자신감을 가질 수 있으며, 새로 도입한 기술의 적용에 문제가 없는지 확인할 수 있는 가장 좋은 방법은 빠르게 실행 가능하고 스스로 테스트 수행과 기대하는 결과에 대한 확인까지 해주는 코드로 된 자동화된 테스트를 만들어두는 것
+
+</br>
+
+### 2.2.2 테스트의 효율적인 수행과 결과 관리
+
+좀 더 편리하게 테스트를 수행하고 편리하게 결과를 확인하려면 단순한 main() 메소드로는 한계가 있다. 
+
+- 일정한 패턴을 가진 테스트를 만들 수 있고, 
+- 많은 테스트를 간단히 실행시킬 수 있으며, 
+- 테스트 결과를 종합해서 볼 수 있고, 
+- 테스트가 실패한 곳을 빠르게 찾을 수 있는 기능을 갖춘
+
+테스트 지원 도구과 그에 맞는 테스트 작성 방법이 필요하다. 자바 테스팅 프레임워크라 불리는 JUnit은 이름 그대로 자바로 단위 테스트를 만들 때 유용하게 쓸 수 있다.
+
+#### JUnit 테스트로 전환
+
+지금까지 만들었던 main() 메소드 테스트를 JUnit을 이용해 다시 작성해보자. JUnit은 프레임워크로 개발자가 만든 클래스의 오브젝트를 생성하고 실행하는 일은 프레임워크에 의해 진행된다. 따라서 프레임워크에서 동작하는 코드는 main() 메소드도 필요 없고 오브젝트를 만들어서 실행시키는 코드를 만들 필요도 없다.
+
+#### 테스트 메소드 전환
+
+테스트가 main() 메소드 만들어졌다는 건 제어권을 직접 갖는다는 의미. 프레임워크에 적용하기엔 적합하지 않음. 그래서 가장 먼저 할 일은 main() 메소드에 있던 테스트 코드를 일반 메소드로 옮기는 것.
+
+새로 만들 테스트 메소드는 JUnit 프레임워크가 요구하는 조건 두 가지를 따라야 함.
+
+- 메소드가 public으로 선언돼야 함
+- 메소드에 @Test라는 어노테이션을 붙여야 함
+
+```java
+import org.junit.Test;
+...
+
+public class UserDaoTest {
+
+    @Test
+    public void addAndGet() throws SQLException {
+        ApplicationContext context = new AnnotationConfigApplicationContext(DaoFactory.class);
+        UserDao dao = context.getBean("userDao", UserDao.class);
+      	...
+    }
+}
+```
+
+main() 대신 일반 메소드로 만들고 적절한 이름을 붙여준다. 테스트의 의도가 무엇인지 알 수 있는 이름이 좋다.
+
+#### 검증 코드 전환
+
+테스트의 결과를 검증하는 if/else 문장을 JUnit이 제공하는 방법을 이용해 전환해보자. UserDaoTest에서 if 문장의 기능을 JUnit이 제공해주는 assertThat이라는 스태틱 메소드를 이용해 다음과 같이 변경할 수 있다.
+
+```java
+// before
+if (!user.getName().equals(user2.getName())) {...}
+
+// after
+assertThat(user2.getName(), is(user.getName()));
+```
+
+assertThat() 메소드는 첫 번째 파라미터의 값을 뒤에 나오는 매처(matcher)라고 불리는 조건으로 비교해서 일치하면 당므으로 넘어가고, 아니면 테스트가 실패하도록 만들어준다. is()는 매처의 일종으로 euqals()로 비교해주는 기능을 가졌다.
+
+JUnit은 예외가 발생하거나 assertThat()에서 실패하지 않고 테스트 메소드의 실행이 완료된면 테스트가 성공했다고 인식한다. "테스트 성공"이라는 메시지를 굳이 출력할 필요 없이 다양한 방법으로 테스트 결과를 알려준다.
+
+#### JUnit 테스트 실행
+
+JUnit 프레임워크를 이용해 앞에서 만든 테스트 메소드를 실행하도록 코드를 만들어보자. 스프링 컨테이너와 마찬가지로 JUnit 도 어디선가 한 번은 시작시켜줘야 한다. 어디에든 main() 메소드를 하나 추가하고, 그 안에 JUnitCore 클래스의 main 메소드를 호출해주는 간단한 코드를 넣어주면 된다.
+
+```java
+import org.junit.runner.JUnitCore;
+...
+public static void main(String[] args) {
+  JUnitCore.main("springbook.user.dao.UserDaoTest");
+}
+```
+
+이 클래스를 실행하면 테스트를 실행하는 데 걸린 시간과 테스트 결과, 그리고 몇 개의 테스트 메소드가 실행됐는지를 알려준다. 만약 테스트가 실패하면 OK 대신 FAILURES라는 내용이 출력되고, 총 수행한 테스트 중에서 몇 개의 테스트가 실패했는지 보여준다.
+
+JUnit은 assertThat()을 이용해 검증을 했을 때 기대한 결과가 아니면 AssertionError를 던진다. 따라서 assertThat()의 조건을 만족하지 못하면 테스트는 더 이상 진행되지 않고 JUnit은 테스트가 실패했음을 알게 된다. 테스트 수행 중에 일반 예외가 발생한 경우에도 마찬가지다.
+
